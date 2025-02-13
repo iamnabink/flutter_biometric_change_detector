@@ -52,7 +52,7 @@ android {
     dependencies {
         testImplementation("org.jetbrains.kotlin:kotlin-test")
         testImplementation("org.mockito:mockito-core:5.0.0")
-        implementation("androidx.biometric:biometric:1.4.0-alpha02") // latest as of 12 feb 2025
+        implementation("androidx.biometric:biometric:1.1.0") // latest as of 12 feb 2025
     }
 
     testOptions {
