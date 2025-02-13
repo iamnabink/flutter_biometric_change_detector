@@ -1,0 +1,30 @@
+name: flutter_biometric_change_detector
+description: "Flutter plugin to detect changes in biometric authentication status on Android and iOS."
+version: 1.0.0
+license: MIT
+issue_tracker: https://github.com/iamnabink/flutter_biometric_change_detector/issues
+repository: https://github.com/iamnabink/flutter_biometric_change_detector
+homepage: https://nabrajkhadka.com.np
+
+environment:
+  sdk: ^3.5.4
+  flutter: '>=3.3.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^2.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.nabrajkhadka.flutter_biometric_change_detector
+        pluginClass: FlutterBiometricChangeDetectorPlugin
+      ios:
+        pluginClass: FlutterBiometricChangeDetectorPlugin
