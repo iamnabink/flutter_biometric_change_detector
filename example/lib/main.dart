@@ -34,7 +34,7 @@ class TestHomePage extends StatefulWidget {
 
 class _TestHomePageState extends State<TestHomePage>
     with WidgetsBindingObserver {
-   bool? _hasChanged;
+  bool? _hasChanged;
 
   @override
   void initState() {

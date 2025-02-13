@@ -5,11 +5,13 @@ import 'package:flutter_biometric_change_detector/flutter_biometric_change_detec
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  MethodChannelFlutterBiometricChangeDetector platform = MethodChannelFlutterBiometricChangeDetector();
+  MethodChannelFlutterBiometricChangeDetector platform =
+      MethodChannelFlutterBiometricChangeDetector();
   const MethodChannel channel = MethodChannel('BIOMETRIC_CHANGE');
 
   setUp(() {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
       channel,
       (MethodCall methodCall) async {
         return '42';
@@ -18,7 +20,8 @@ void main() {
   });
 
   tearDown(() {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(channel, null);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, null);
   });
 
   test('checkBiometricChange', () async {

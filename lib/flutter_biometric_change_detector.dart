@@ -9,7 +9,6 @@ import 'flutter_biometric_change_detector_platform_interface.dart';
 //  Created by Nabraj Khadka on 12/02/2025.
 //
 class FlutterBiometricChangeDetector {
-
   FlutterBiometricChangeDetector._internal();
 
   static Future<AuthChangeStatus?> checkBiometric() {
@@ -19,8 +18,7 @@ class FlutterBiometricChangeDetector {
 
   /// iOS only
   static Future<AuthChangeStatus?> checkBiometricIOS() {
-    return FlutterBiometricChangeDetectorPlatform.instance
-        .checkBiometricIOS();
+    return FlutterBiometricChangeDetectorPlatform.instance.checkBiometricIOS();
   }
 
   /// Android only
