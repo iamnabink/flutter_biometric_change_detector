@@ -7,7 +7,7 @@ A Flutter plugin to detect changes in biometric authentication status on Android
 This package is inspired by discussions and issues from:
 - [Flutter GitHub Issue #88848](https://github.com/flutter/flutter/issues/88848#issuecomment-906724327)
 - [Flutter GitHub Issue #142788](https://github.com/flutter/flutter/issues/142788)
-- [Stack Overflow Answer](https://stackoverflow.com/a/77464375/12030116)
+- [Stack Overflow Question](https://stackoverflow.com/q/77463974/12030116)
 
 ## Why This Package?
 
@@ -30,8 +30,7 @@ Neither of these APIs are directly exposed through existing Flutter plugins. Thi
 Add the dependency to your `pubspec.yaml`:
 
 ```yaml
-flutter_biometric_change_detector:
-  git: https://github.com/flutter_biometric_change_detector
+flutter_biometric_change_detector: ^1.0.1
 ```
 
 ## Usage
@@ -78,7 +77,7 @@ Future<AuthChangeStatus?> detectBiometricChange();
 Issues and pull requests are welcome!
 
 - GitHub: [flutter_biometric_change_detector](https://github.com/flutter_biometric_change_detector)
-- Me: [flutter_biometric_change_detector](https://github.com/iamnabink)
+- Me: [Nabraj Khadka](https://github.com/iamnabink)
 
 ## License
 
