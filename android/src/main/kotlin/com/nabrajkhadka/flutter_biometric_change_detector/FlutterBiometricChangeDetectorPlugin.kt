@@ -58,39 +58,51 @@ class FlutterBiometricChangeDetectorPlugin: FlutterPlugin, MethodCallHandler {
 
   @RequiresApi(Build.VERSION_CODES.N)
   private fun checkBiometricChange( result: Result) {
-    val cipher: Cipher = getCipher()
-    val secretKey: SecretKey = getSecretKey()
-
     try {
-      cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-
-      result.success("biometricValid")
-
-    } catch (e: KeyPermanentlyInvalidatedException) {
-
-      result.error("biometricChanged",
-        "Yes your hand has been changed, please login to activate again",e.toString())
-
-    } catch (e: InvalidKeyException) {
-      e.printStackTrace() //todo: print only in debug mode
-      result.error("biometricInvalid","Invalid biometric",e.toString())
-    }
-    //Title require
-    val promptInfo = BiometricPrompt.PromptInfo.Builder().setTitle("Biometric").setDescription("Check Biometric").setNegativeButtonText("OK").build()
-
-    try {
-      cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-      biometricPrompt?.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
-    } catch (e: KeyPermanentlyInvalidatedException) {
-      keyStore?.deleteEntry(KEY_NAME)
-      if (getCurrentKey(KEY_NAME) == null) {
-        generateSecretKey(KeyGenParameterSpec.Builder(KEY_NAME,
-          KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT).setBlockModes(KeyProperties.BLOCK_MODE_CBC)
-          .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
-          .setUserAuthenticationRequired(true) // Invalidate the keys if the user has registered a new biometric
-          .setInvalidatedByBiometricEnrollment(true).build())
+      val cipher: Cipher = getCipher()
+      val secretKey: SecretKey? = getSecretKey()
+      if (secretKey == null) {
+        result.error("biometricNotAvailable",
+          "Biometric authentication is not available or no biometric is enrolled",
+          "No secret key could be created")
+        return
       }
-
+      try {
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey)
+        result.success("biometricValid")
+      } catch (e: KeyPermanentlyInvalidatedException) {
+        result.error("biometricChanged",
+          "Yes your hand has been changed, please login to activate again",e.toString())
+      } catch (e: InvalidKeyException) {
+        e.printStackTrace() //todo: print only in debug mode
+        result.error("biometricInvalid","Invalid biometric",e.toString())
+      }
+      //Title require
+      val promptInfo = BiometricPrompt.PromptInfo.Builder()
+        .setTitle("Biometric")
+        .setDescription("Check Biometric")
+        .setNegativeButtonText("OK")
+        .build()
+      try {
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey)
+        biometricPrompt?.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
+      } catch (e: KeyPermanentlyInvalidatedException) {
+        keyStore?.deleteEntry(KEY_NAME)
+        if (getCurrentKey(KEY_NAME) == null) {
+          val builder = KeyGenParameterSpec.Builder(KEY_NAME,
+            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
+            .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
+            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
+            .setUserAuthenticationRequired(true) // Invalidate the keys if the user has registered a new biometric
+          if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            builder.setInvalidatedByBiometricEnrollment(true)
+          }
+          generateSecretKey(builder.build())
+        }
+      }
+    } catch (e: Exception) {
+      e.printStackTrace()
+      result.error("biometricError", "Error checking biometric", e.toString())
     }
   }
   fun getCurrentKey(keyName: String): Key? {
@@ -99,34 +111,39 @@ class FlutterBiometricChangeDetectorPlugin: FlutterPlugin, MethodCallHandler {
   }
 
   @RequiresApi(Build.VERSION_CODES.N)
-  fun getSecretKey(): SecretKey {
+  fun getSecretKey(): SecretKey? {
     try {
       keyStore = KeyStore.getInstance("AndroidKeyStore")
     } catch (e: Exception) {
       e.printStackTrace() //todo: print only in debug mode
+      return null
     }
     var keyGenerator: KeyGenerator? = null
     try {
       keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
     } catch (e: Exception) {
       e.printStackTrace() //todo: print only in debug mode
+      return null
     }
     try {
       if (getCurrentKey(KEY_NAME) == null) {
-        keyGenerator!!.init(
-          KeyGenParameterSpec.Builder(KEY_NAME,
-            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT).setBlockModes(
-            KeyProperties.BLOCK_MODE_CBC)
-            .setUserAuthenticationRequired(true).setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
-            .setInvalidatedByBiometricEnrollment(true)
-            .build())
+        val builder = KeyGenParameterSpec.Builder(KEY_NAME,
+            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
+            .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
+            .setUserAuthenticationRequired(true)
+            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+          builder.setInvalidatedByBiometricEnrollment(true)
+        }
+        keyGenerator!!.init(builder.build())
         keyGenerator.generateKey()
       }
 
     } catch (e: Exception) {
       e.printStackTrace() //todo: print only in debug mode
+      return null
     }
-    return keyStore?.getKey(KEY_NAME, null) as SecretKey
+    return keyStore?.getKey(KEY_NAME, null) as? SecretKey
   }
 
   @RequiresApi(Build.VERSION_CODES.M)
