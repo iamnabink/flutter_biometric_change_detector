@@ -27,3 +27,13 @@ migrate_working_dir/
 **/doc/api/
 .dart_tool/
 build/
+.build/
+.swiftpm/
+
+# Keep these historical tracked files explicitly unignored for pub validation.
+!example/ios/Podfile.lock
+!ios/Classes/FlutterBiometricChangeDetectorPlugin.swift
+!ios/Resources/PrivacyInfo.xcprivacy
+
+# FVM Version Cache
+.fvm/

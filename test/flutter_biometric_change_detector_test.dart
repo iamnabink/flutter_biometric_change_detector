@@ -18,7 +18,6 @@ class MockFlutterBiometricChangeDetectorPlatform
     throw UnimplementedError();
   }
 
-  @override
   Future<String> getTokenBiometric() {
     throw UnimplementedError();
   }
